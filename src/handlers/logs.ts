@@ -25,20 +25,27 @@ export const getLogs = async (req, res, next) => {
     }
 
     if (req.query.from) {
-      from = new Date(req.query.from).getTime() || Number.NEGATIVE_INFINITY;
+      from =
+        new Date(new Date(req.query.from).toDateString()).getTime() ||
+        Number.NEGATIVE_INFINITY;
       user.log = user.log.filter((exercise) => {
         return new Date(exercise.date).getTime() >= from;
       });
     }
 
     if (req.query.to) {
-      to = new Date(req.query.to).getTime() || Number.POSITIVE_INFINITY;
+      to =
+        new Date(new Date(req.query.to).toDateString()).getTime() ||
+        Number.POSITIVE_INFINITY;
       user.log = user.log.filter((exercise) => {
         return new Date(exercise.date).getTime() <= to;
       });
     }
 
     user.count = user.log.length;
+    user.log = user.log.sort(
+      (ex1, ex2) => new Date(ex1.date).getTime() - new Date(ex2.date).getTime()
+    );
 
     if (req.query.limit > 0) {
       user.log = user.log.slice(0, req.query.limit);
